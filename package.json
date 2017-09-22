@@ -1,0 +1,10 @@
+{
+    "scripts" : {
+        "nodemon" : "nodemon nodeServer.njs"
+    },
+  "dependencies": {
+    "express": "^4.15.4",
+    "nodemon": "^1.12.1",
+    "socketio": "^1.0.0"
+  }
+}

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Socket test</title>
+    <!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js'></script> -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.slim.js'></script>
+</head>
+
+<body>
+    <ul id="messages"></ul>
+
+    <input id="js_msg_input" autocomplete="off" />
+    <button type="button" onclick='sendMsg()'>Send</button>
+
+    <br>
+
+    <input id="js_room_id_input" autocomplete="off" placeholder="1" />
+    <button onclick='joinRoom()'>join room</button>
+
+    <br>
+
+    <button onclick='leaveRoom()'>leave room</button>
+
+    <ul id='js_msg_list'></ul>
+
+    <script>
+        var SOCKET_SERVER = 'ws://127.0.0.1:8077/';
+        // var SOCKET_SERVER = '/order';
+
+        var socket = io.connect(SOCKET_SERVER);
+
+        var ROOM = 'CUSTOMER_ID:1';
+
+        initListeners(socket);
+
+        var msg_input_elem = document.getElementById('js_msg_input');
+        var room_id_input_elem = document.getElementById('js_room_id_input');
+        var list_elem = document.getElementById('js_msg_list');
+
+        function sendMsg() {
+            socket.emit('new-data-on-client', msg_input_elem.value);
+        }
+
+        function joinRoom() {
+            socket.emit('client.join-room', {
+                customer_id: room_id_input_elem.value || 1
+            });
+        }
+
+        function leaveRoom() {
+            socket.emit('client.leave-room', {
+                customer_id: room_id_input_elem.value || 1
+            });
+        }
+
+        function initListeners(socket) {
+            socket.on('login-succeed', function(data) {
+                console.log('server connected!');
+            });
+
+            socket.on('new-order-on-server', function(data) {
+                addMsgItem(JSON.stringify(data));
+            });
+
+            // broadcast 是广播给除当前 连接以外的所有其他 client
+            // 因此要测试广播要开两个 client
+            socket.on('new-data-on-sever-broadcast', function(data) {
+                console.log('server broadcast!');
+            });
+        }
+
+        function addMsgItem(text) {
+            var li = document.createElement('li');
+            li.innerHTML = text;
+            list_elem.appendChild(li);
+        }
+    </script>
+</body>
+
+</html>
