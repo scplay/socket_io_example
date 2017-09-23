@@ -25,11 +25,22 @@
 
     <ul id='js_msg_list'></ul>
 
+    <br>
+
+    <input id="js_say_id_input" placeholder="输入对方的id" autocomplete="off" />
+    <button type="button" onclick='sayToSomeOne()'>Say To Someone</button>
+
+    <ul id='js_online_id_list'></ul>
+
     <script>
         var SOCKET_SERVER = 'ws://127.0.0.1:8077/';
+
+        // 进入 namespace 是只读的，好像不能 emit 信息
         // var SOCKET_SERVER = '/order';
 
-        var socket = io.connect(SOCKET_SERVER);
+        var socket = io(SOCKET_SERVER);
+        // var order_socket = io(SOCKET_SERVER);
+        // var socket = io.connect(SOCKET_SERVER);
 
         var ROOM = 'CUSTOMER_ID:1';
 
@@ -38,6 +49,8 @@
         var msg_input_elem = document.getElementById('js_msg_input');
         var room_id_input_elem = document.getElementById('js_room_id_input');
         var list_elem = document.getElementById('js_msg_list');
+        var say_to_id_input_elem = document.getElementById('js_say_id_input');
+        var online_id_ul_elem = document.getElementById('js_online_id_list');
 
         function sendMsg() {
             socket.emit('new-data-on-client', msg_input_elem.value);
@@ -57,7 +70,7 @@
 
         function initListeners(socket) {
             socket.on('login-succeed', function(data) {
-                console.log('server connected!');
+                console.log('server connected!' + JSON.stringify(data));
             });
 
             socket.on('new-order-on-server', function(data) {
@@ -69,12 +82,32 @@
             socket.on('new-data-on-sever-broadcast', function(data) {
                 console.log('server broadcast!');
             });
+
+            // broadcast 是广播给除当前 连接以外的所有其他 client
+            // 因此要测试广播要开两个 client
+            socket.on('broadcast.refresh-online-ids', function(ids) {
+                online_id_ul_elem.innerHTML = '';
+                var lis = ids.forEach(function(id){
+                    var li = document.createElement('li');
+                    li.innerHTML = 'id: ' + id;
+                    online_id_ul_elem.appendChild(li);
+                });
+            });
         }
 
         function addMsgItem(text) {
             var li = document.createElement('li');
             li.innerHTML = text;
             list_elem.appendChild(li);
+        }
+
+        function sayToSomeOne() {
+            var payload = {
+                id : say_to_id_input_elem.value ,
+                msg : 'hello'
+            }
+
+            socket.emit('client.say-to-someone', payload);
         }
     </script>
 </body>
