@@ -148,7 +148,7 @@ function newLoginListener(data) {
 /**
  * new order notification, broadcast new msg
  * 
- * @example http://localhost:8077/pushorder?token=xjxx&order_id=1
+ * @example http://localhost:8077/pushorder?token=xjxx&order_id=2&customer_id=1
  * 
  * @param req 
  * @param res 
@@ -212,7 +212,7 @@ function cacheMsg(data) {
  */
 function listenRoomJoin(socket) {
     socket.on('client.join-room', function(data) {
-        console.log(data);
+        console.log('client is joining in room!');
         socket.join(CUSTOMER_ROOM_PREFIX + data.customer_id);
     })
 }

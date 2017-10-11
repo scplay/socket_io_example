@@ -35,14 +35,14 @@
     <script>
         var SOCKET_SERVER = 'ws://127.0.0.1:8077/';
 
-        // 进入 namespace 是只读的，好像不能 emit 信息
-        // var SOCKET_SERVER = '/order';
+        // 进入 namespace 是只读的，好像不能 emit 信息，进行订单频道
+        // var SOCKET_SERVER = 'ws://127.0.0.1:8077/order';
 
         var socket = io(SOCKET_SERVER);
         // var order_socket = io(SOCKET_SERVER);
         // var socket = io.connect(SOCKET_SERVER);
 
-        var ROOM = 'CUSTOMER_ID:1';
+        // var ROOM = 'CUSTOMER_ID:1';
 
         initListeners(socket);
 
